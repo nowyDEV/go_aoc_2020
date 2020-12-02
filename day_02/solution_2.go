@@ -13,9 +13,9 @@ func main() {
 	text := getFileContents()
 
 	type PasswordConfig struct {
-		positions []int
+		positions    []int
 		requiredChar string
-		password string
+		password     string
 	}
 	
 	var passwords []PasswordConfig
