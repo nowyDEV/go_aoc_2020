@@ -1,12 +1,12 @@
 package main
 
-import ( 
+import (
 	"bufio"
 	"fmt"
 	"log"
 	"os"
-	"strings"
 	"strconv"
+	"strings"
 )
 
 func main() {
@@ -17,13 +17,13 @@ func main() {
 		requiredChar string
 		password     string
 	}
-	
+
 	var validItems int
 
 	for _, item := range text {
 		arr := strings.Split(item, " ")
 
-		config := PasswordConfig{convertListOfStrToInt(strings.Split(arr[0], "-")) , strings.Replace(arr[1], ":", "", 1), arr[2]}
+		config := PasswordConfig{convertListOfStrToInt(strings.Split(arr[0], "-")), strings.Replace(arr[1], ":", "", 1), arr[2]}
 
 		positionsOfRequiredChar := getCharPositions(config.password, config.requiredChar)
 		numOfValidPositions := getNumOfOccurencies(positionsOfRequiredChar, config.positions)
@@ -37,21 +37,21 @@ func main() {
 }
 
 func getFileContents() []string {
-	file, err := os.Open("data.txt") 
-  
-	if err != nil { 
-		log.Fatalf("failed to open") 
-	} 
+	file, err := os.Open("data.txt")
+
+	if err != nil {
+		log.Fatalf("failed to open")
+	}
 
 	scanner := bufio.NewScanner(file)
 
-	scanner.Split(bufio.ScanLines) 
-	var listOfLines []string 
+	scanner.Split(bufio.ScanLines)
+	var listOfLines []string
 
-	for scanner.Scan() { 
-		listOfLines = append(listOfLines, scanner.Text()) 
-	} 
-		
+	for scanner.Scan() {
+		listOfLines = append(listOfLines, scanner.Text())
+	}
+
 	file.Close()
 
 	return listOfLines
@@ -63,7 +63,7 @@ func getCharPositions(text string, char string) []int {
 
 	for i, item := range textArr {
 		if item == char {
-			positions = append(positions, i + 1)
+			positions = append(positions, i+1)
 		}
 	}
 
@@ -88,10 +88,10 @@ func convertListOfStrToInt(list []string) []int {
 	for _, item := range list {
 		integer, err := strconv.Atoi(item)
 
-		if err != nil { 
-			log.Fatalf("failed to open") 
-		} 
-		
+		if err != nil {
+			log.Fatalf("failed to open")
+		}
+
 		intList = append(intList, integer)
 	}
 

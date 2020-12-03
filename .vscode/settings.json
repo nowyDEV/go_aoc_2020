@@ -1,0 +1,10 @@
+{
+  "editor.formatOnSave": true,
+  "go.formatTool": "goimports",
+  "editor.defaultFormatter": "golang.go",
+  "go.useLanguageServer": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true
+  },
+  "editor.fontSize": 13
+}
