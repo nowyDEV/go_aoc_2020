@@ -1,16 +1,15 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"log"
-	"os"
 	"strconv"
 	"strings"
+	"utils/readfile"
 )
 
 func main() {
-	text := getFileContents()
+	text := readfile.GetFileContents("../day_02/data.txt")
 
 	type PasswordConfig struct {
 		positions    []int
@@ -34,27 +33,6 @@ func main() {
 	}
 
 	fmt.Println(validItems)
-}
-
-func getFileContents() []string {
-	file, err := os.Open("data.txt")
-
-	if err != nil {
-		log.Fatalf("failed to open")
-	}
-
-	scanner := bufio.NewScanner(file)
-
-	scanner.Split(bufio.ScanLines)
-	var listOfLines []string
-
-	for scanner.Scan() {
-		listOfLines = append(listOfLines, scanner.Text())
-	}
-
-	file.Close()
-
-	return listOfLines
 }
 
 func getCharPositions(text string, char string) []int {
