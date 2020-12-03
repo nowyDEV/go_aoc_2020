@@ -18,21 +18,15 @@ func main() {
 		password     string
 	}
 	
-	var passwords []PasswordConfig
+	var validItems int
 
 	for _, item := range text {
 		arr := strings.Split(item, " ")
 
 		config := PasswordConfig{convertListOfStrToInt(strings.Split(arr[0], "-")) , strings.Replace(arr[1], ":", "", 1), arr[2]}
 
-		passwords = append(passwords, config)
-	}
-
-	var validItems int
-
-	for _, item := range passwords {
-		positionsOfRequiredChar := getCharPositions(item.password, item.requiredChar)
-		numOfValidPositions := getNumOfOccurencies(positionsOfRequiredChar, item.positions)
+		positionsOfRequiredChar := getCharPositions(config.password, config.requiredChar)
+		numOfValidPositions := getNumOfOccurencies(positionsOfRequiredChar, config.positions)
 
 		if numOfValidPositions == 1 {
 			validItems = validItems + 1
