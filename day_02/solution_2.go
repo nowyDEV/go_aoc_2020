@@ -1,16 +1,15 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"log"
-	"os"
 	"strconv"
 	"strings"
+	"utils/readfile"
 )
 
 func main() {
-	text := getFileContents()
+	text := readfile.GetFileContents("../day_02/data.txt")
 
 	type PasswordConfig struct {
 		positions    []int
@@ -26,7 +25,7 @@ func main() {
 		config := PasswordConfig{convertListOfStrToInt(strings.Split(arr[0], "-")), strings.Replace(arr[1], ":", "", 1), arr[2]}
 
 		positionsOfRequiredChar := getCharPositions(config.password, config.requiredChar)
-		numOfValidPositions := getNumOfOccurencies(positionsOfRequiredChar, config.positions)
+		numOfValidPositions := getNumOfOccurences(positionsOfRequiredChar, config.positions)
 
 		if numOfValidPositions == 1 {
 			validItems = validItems + 1
@@ -34,27 +33,6 @@ func main() {
 	}
 
 	fmt.Println(validItems)
-}
-
-func getFileContents() []string {
-	file, err := os.Open("data.txt")
-
-	if err != nil {
-		log.Fatalf("failed to open")
-	}
-
-	scanner := bufio.NewScanner(file)
-
-	scanner.Split(bufio.ScanLines)
-	var listOfLines []string
-
-	for scanner.Scan() {
-		listOfLines = append(listOfLines, scanner.Text())
-	}
-
-	file.Close()
-
-	return listOfLines
 }
 
 func getCharPositions(text string, char string) []int {
@@ -70,16 +48,16 @@ func getCharPositions(text string, char string) []int {
 	return positions
 }
 
-func getNumOfOccurencies(input []int, list []int) int {
-	var occurencies []int
+func getNumOfOccurences(input []int, list []int) int {
+	var occurences int
 
 	for _, item := range input {
 		if item == list[0] || item == list[1] {
-			occurencies = append(occurencies, item)
+			occurences = occurences + 1
 		}
 	}
 
-	return len(occurencies)
+	return occurences
 }
 
 func convertListOfStrToInt(list []string) []int {
@@ -89,7 +67,7 @@ func convertListOfStrToInt(list []string) []int {
 		integer, err := strconv.Atoi(item)
 
 		if err != nil {
-			log.Fatalf("failed to open")
+			log.Fatalf("failed to convert")
 		}
 
 		intList = append(intList, integer)
