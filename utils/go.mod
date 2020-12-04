@@ -1,3 +1,3 @@
-module aoc-2020/utils
+module utils/readfile
 
 go 1.15
