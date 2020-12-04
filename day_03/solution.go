@@ -6,7 +6,6 @@ import (
 )
 
 const tree = "#"
-const openSquare = "."
 
 type slope struct {
 	right int
@@ -33,10 +32,6 @@ func getMultipliedTreesFromSlopes(slopes []slope, inputMap []string) int {
 	return numOfTrees
 }
 
-func getCharFromIndex(text string, index int) string {
-	return string(text[index : index+1])
-}
-
 func getTreesFromSlope(slopeItem slope, inputMap []string) int {
 	rowLength := len(inputMap[0])
 	numOfTrees := 0
@@ -47,7 +42,7 @@ func getTreesFromSlope(slopeItem slope, inputMap []string) int {
 		x = (x + slopeItem.right) % rowLength
 		y = y + slopeItem.down
 
-		if getCharFromIndex(inputMap[y], x) == tree {
+		if string(inputMap[y][x]) == tree {
 			numOfTrees = numOfTrees + 1
 		}
 	}
