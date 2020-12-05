@@ -5,11 +5,11 @@ import (
 	"log"
 	"strconv"
 	"strings"
-	"utils/readfile"
+	"aoc-2020/utils"
 )
 
 func main() {
-	text := readfile.GetFileContents("../day_02/data.txt")
+	text := utils.ReadTextFile("../day_02/data.txt")
 
 	type PasswordConfig struct {
 		positions    []int

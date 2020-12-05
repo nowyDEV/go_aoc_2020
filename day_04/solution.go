@@ -2,19 +2,16 @@ package main
 
 import (
 	"fmt"
-	"utils/readfile"
+	"aoc-2020/utils"
 	"strings"
-	"strconv"
-	"encoding/hex"
 	"regexp"
-	"log"
 )
 
 var requiredCodes = []string{"byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"}
 var numOfRequiredValidCodes = len(requiredCodes)
 
 func main() {
-	text := readfile.GetFileContents("../day_04/data.txt")
+	text := utils.ReadTextFile("../day_04/data.txt")
 
 	fmt.Println(calculateValidPassports(text, 0, 0, 0))
 }
@@ -67,15 +64,15 @@ func calculateValidCodes(textRow string) int {
 func isValidCode(key string, value string) (bool, bool) {
 	switch key {
 		case "byr":
-			return true, isInRange(getIntFromString(value), 1920, 2002)
+			return true, utils.IsInRange(utils.GetIntFromString(value), 1920, 2002)
 		case "iyr":
-			return true, isInRange(getIntFromString(value), 2010, 2020)
+			return true, utils.IsInRange(utils.GetIntFromString(value), 2010, 2020)
 		case "eyr":
-			return true, isInRange(getIntFromString(value), 2020, 2030)
+			return true, utils.IsInRange(utils.GetIntFromString(value), 2020, 2030)
 		case "hgt":
 			return true, validateHeight(value)
 		case "hcl":
-			return true, validateHex(value)
+			return true, utils.IsHexValue(value)
 		case "ecl":
 			return true, validateEyeColor(value)
 		case "pid":
@@ -85,22 +82,10 @@ func isValidCode(key string, value string) (bool, bool) {
 	}
 }
 
-func isInRange(input int, start int, end int) bool {
-	return input >= start && input <= end
-}
-
-func validateHex(input string) bool {
-	_, err := hex.DecodeString(strings.Replace(input, "#", "", 1))
-	if (err != nil) {
-		return false
-	}
-	return len(input) == 7
-}
-
 var validEyeColors = []string{"amb", "blu", "brn", "gry", "grn", "hzl", "oth"}
 
 func validateEyeColor(input string) bool {
-	return containsString(validEyeColors, input) 
+	return utils.ContainsString(validEyeColors, input) 
 }
 
 func validateHeight(input string) bool {
@@ -108,33 +93,13 @@ func validateHeight(input string) bool {
 	matchInches, _ := regexp.MatchString("([0-9]+)in", input)
 
 	if (matchCm) {
-		return isInRange(getIntFromString(input), 150, 193)
+		return utils.IsInRange(utils.GetIntFromString(input), 150, 193)
 	}
 
 	if (matchInches) {
-		return isInRange(getIntFromString(input), 59, 76)
+		return utils.IsInRange(utils.GetIntFromString(input), 59, 76)
 	}
 
-	return false
-}
-
-func getIntFromString(input string) int {
-	r, _ := regexp.Compile("([0-9]+)")
-	value, err := strconv.Atoi(r.FindString(input))
-
-	if (err != nil) {
-		log.Fatalf("failed to convert")
-	}
-
-	return value
-}
-
-func containsString(s []string, e string) bool {
-	for _, a := range s {
-			if a == e {
-					return true
-			}
-	}
 	return false
 }
 
