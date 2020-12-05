@@ -12,7 +12,6 @@ import (
 
 var requiredCodes = []string{"byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"}
 var numOfRequiredValidCodes = len(requiredCodes)
-var requiredCodesString = strings.Join(requiredCodes[:], ":") + ":"
 
 func main() {
 	text := readfile.GetFileContents("../day_04/data.txt")
@@ -50,12 +49,14 @@ func calculateValidCodes(textRow string) int {
 		codeKey := strings.Split(codeKeyValue, ":")[0]
 		codeValue := strings.Split(codeKeyValue, ":")[1]
 
+		isValidCodeKey, isValidCodeValue := isValidCode(codeKey, codeValue)
+
 		// Part 1
-		// if (isValidCodeKey(codeKey)) {
+		// if (isValidCodeKey) {
 		// 	validCodes  = validCodes + 1
 		// }
 
-		if (isValidCodeKey(codeKey) && isValidCodeValue(codeKey, codeValue)) {
+		if (isValidCodeKey && isValidCodeValue) {
 			validCodes  = validCodes + 1
 		}
 	}
@@ -63,29 +64,25 @@ func calculateValidCodes(textRow string) int {
 	return validCodes
 }
 
-func isValidCodeValue(key string, value string) bool {
+func isValidCode(key string, value string) (bool, bool) {
 	switch key {
 		case "byr":
-			return isInRange(getIntFromString(value), 1920, 2002)
+			return true, isInRange(getIntFromString(value), 1920, 2002)
 		case "iyr":
-			return isInRange(getIntFromString(value), 2010, 2020)
+			return true, isInRange(getIntFromString(value), 2010, 2020)
 		case "eyr":
-			return isInRange(getIntFromString(value), 2020, 2030)
+			return true, isInRange(getIntFromString(value), 2020, 2030)
 		case "hgt":
-			return validateHeight(value)
+			return true, validateHeight(value)
 		case "hcl":
-			return validateHex(value)
+			return true, validateHex(value)
 		case "ecl":
-			return validateEyeColor(value)
+			return true, validateEyeColor(value)
 		case "pid":
-			return validatePassportID(value)
+			return true, validatePassportID(value)
 		default:
-			return false
+			return false, false
 	}
-}
-
-func isValidCodeKey(input string) bool {
-	return strings.Contains(requiredCodesString, input)
 }
 
 func isInRange(input int, start int, end int) bool {
@@ -100,10 +97,10 @@ func validateHex(input string) bool {
 	return len(input) == 7
 }
 
-var eyeColors = []string{"amb", "blu", "brn", "gry", "grn", "hzl", "oth"}
+var validEyeColors = []string{"amb", "blu", "brn", "gry", "grn", "hzl", "oth"}
 
 func validateEyeColor(input string) bool {
-	return contains(eyeColors, input) 
+	return containsString(validEyeColors, input) 
 }
 
 func validateHeight(input string) bool {
@@ -132,7 +129,7 @@ func getIntFromString(input string) int {
 	return value
 }
 
-func contains(s []string, e string) bool {
+func containsString(s []string, e string) bool {
 	for _, a := range s {
 			if a == e {
 					return true
