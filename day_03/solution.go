@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"utils/readfile"
+	"aoc-2020/utils"
 )
 
 const tree = "#"
@@ -13,7 +13,7 @@ type slope struct {
 }
 
 func main() {
-	text := readfile.GetFileContents("../day_03/data.txt")
+	text := utils.ReadTextFile("../day_03/data.txt")
 
 	slopeArrSolution1 := []slope{{3, 1}}
 	slopeArrSolution2 := []slope{{1, 1}, {3, 1}, {5, 1}, {7, 1}, {1, 2}}

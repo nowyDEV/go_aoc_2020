@@ -2,6 +2,6 @@ module aoc-2020
 
 go 1.15
 
-replace utils/readfile => ./utils
+replace aoc-2020/utils => ./utils
 
-require utils/readfile v0.0.0-00010101000000-000000000000
+require aoc-2020/utils v0.0.0-00010101000000-000000000000
