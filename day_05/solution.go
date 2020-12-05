@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"aoc-2020/utils"
+	"sort"
 )
 
 const numOfRows = 128
@@ -21,22 +22,33 @@ func main() {
 	}
 
 	fmt.Println(getHighestSeatID(rows, cols, boardingPasses))
-	fmt.Println(seatIDs)
+	fmt.Println(getFreeSeat(seatIDs))
+}
+
+func getFreeSeat(seatIDs []int) int {
+	sort.Ints(seatIDs)
+
+	for i, seatID := range seatIDs {
+		if (seatIDs[(i + 1) % len(seatIDs)]  - seatID > 1) {
+			return seatID + 1
+		}
+	}
+
+	return -1
 }
 
 func getHighestSeatID(rows []int, cols []int, boardingPasses []string) int {
 	highestSeatID := 0
 
 	for _, pass := range boardingPasses {
-		row := getRow(rows, pass[0:7], 0)[0]
-		column := getColumn(cols, pass[7:10], 0)[0]
-
 		seatID := getSeatID(rows, cols, pass)
 
 		if (seatID > highestSeatID) {
 			highestSeatID = seatID
 		}
 	}
+
+	return highestSeatID
 }
 
 func getSeatID(rows []int, cols []int, boardingPass string) int {
