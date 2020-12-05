@@ -11,25 +11,39 @@ const numOfCols = 8
 func main() {
 	boardingPasses := utils.ReadTextFile("../day_05/data.txt")
 
-	highestSeatID := 0
-
 	rows := generateIndexArray(numOfRows)
 	cols := generateIndexArray(numOfCols)
+
+	seatIDs := []int{}
+
+	for _, pass := range boardingPasses {
+		seatIDs = append(seatIDs, getSeatID(rows, cols, pass))
+	}
+
+	fmt.Println(getHighestSeatID(rows, cols, boardingPasses))
+	fmt.Println(seatIDs)
+}
+
+func getHighestSeatID(rows []int, cols []int, boardingPasses []string) int {
+	highestSeatID := 0
 
 	for _, pass := range boardingPasses {
 		row := getRow(rows, pass[0:7], 0)[0]
 		column := getColumn(cols, pass[7:10], 0)[0]
 
-		result := row * 8 + column
+		seatID := getSeatID(rows, cols, pass)
 
-		fmt.Println("column", column, pass[7:10])
-
-		if (result > highestSeatID) {
-			highestSeatID = result
+		if (seatID > highestSeatID) {
+			highestSeatID = seatID
 		}
 	}
+}
 
-	fmt.Println(highestSeatID)
+func getSeatID(rows []int, cols []int, boardingPass string) int {
+	row := getRow(rows, boardingPass[0:7], 0)[0]
+	column := getColumn(cols, boardingPass[7:10], 0)[0]
+
+	return row * 8 + column
 }
 
 func getColumn(cols []int, directions string, currentIndex int) []int {
