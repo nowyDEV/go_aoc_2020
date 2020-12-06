@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"aoc-2020/utils"
+	"fmt"
 )
 
 const tree = "#"
@@ -13,7 +13,7 @@ type slope struct {
 }
 
 func main() {
-	text := utils.ReadTextFile("../day_03/data.txt")
+	text := utils.ReadTextFile("./data.txt")
 
 	slopeArrSolution1 := []slope{{3, 1}}
 	slopeArrSolution2 := []slope{{1, 1}, {3, 1}, {5, 1}, {7, 1}, {1, 2}}
@@ -38,7 +38,7 @@ func getTreesFromSlope(slopeItem slope, inputMap []string) int {
 	x := 0
 	y := 0
 
-	for i := 0; i < (len(inputMap) / slopeItem.down - 1); i++ {
+	for i := 0; i < (len(inputMap)/slopeItem.down - 1); i++ {
 		x = (x + slopeItem.right) % rowLength
 		y = y + slopeItem.down
 

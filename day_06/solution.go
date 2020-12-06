@@ -14,7 +14,7 @@ type group struct {
 type mapOfGroups = map[int]*group
 
 func main() {
-	formData := utils.ReadTextFile("../day_06/data.txt")
+	formData := utils.ReadTextFile("./data.txt")
 
 	fmt.Println(sumAllAnswers(mapAllGroups(formData)))
 	fmt.Println(sumCommonAnswers(mapAllGroups(formData)))
