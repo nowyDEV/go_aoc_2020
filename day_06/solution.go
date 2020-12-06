@@ -8,7 +8,7 @@ import (
 
 type group struct {
 	numOfPeople int
-	answers string
+	answers     string
 }
 
 type mapOfGroups = map[int]*group
@@ -27,15 +27,15 @@ func mapAllGroups(formData []string) mapOfGroups {
 	var indexKey int = 0
 
 	mappedGroups[indexKey] = &group{
-		0, 
+		0,
 		"",
 	}
 
 	for _, line := range formData {
-		if (line == "") {
+		if line == "" {
 			indexKey = indexKey + 1
 			mappedGroups[indexKey] = &group{
-				0, 
+				0,
 				"",
 			}
 		} else {
@@ -54,7 +54,7 @@ func sumCommonAnswers(mappedGroups mapOfGroups) int {
 		uniqueAnswers := getUniqueChars(group.answers)
 
 		for _, answer := range uniqueAnswers {
-			if (strings.Count(group.answers, answer) == group.numOfPeople) {
+			if strings.Count(group.answers, answer) == group.numOfPeople {
 				sum = sum + 1
 			}
 		}
@@ -78,7 +78,7 @@ func getUniqueChars(input string) []string {
 	charMap = make(map[string]bool)
 
 	for _, char := range input {
-    charMap[string(char)] = true
+		charMap[string(char)] = true
 	}
 
 	uniqueChars := make([]string, len(charMap))
