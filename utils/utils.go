@@ -2,11 +2,11 @@ package utils
 
 import (
 	"bufio"
+	"encoding/hex"
 	"log"
 	"os"
-	"encoding/hex"
-	"strconv"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -40,7 +40,7 @@ func IsInRange(input int, start int, end int) bool {
 // IsHexValue checks whether input string is 7-char hex value (e.g. #ffffff)
 func IsHexValue(input string) bool {
 	_, err := hex.DecodeString(strings.Replace(input, "#", "", 1))
-	if (err != nil) {
+	if err != nil {
 		return false
 	}
 	return len(input) == 7
@@ -51,7 +51,7 @@ func GetIntFromString(input string) int {
 	r, _ := regexp.Compile("([0-9]+)")
 	value, err := strconv.Atoi(r.FindString(input))
 
-	if (err != nil) {
+	if err != nil {
 		log.Fatalf("failed to convert")
 	}
 
@@ -61,9 +61,9 @@ func GetIntFromString(input string) int {
 // ContainsString checks whether provided array contains provided string
 func ContainsString(s []string, e string) bool {
 	for _, a := range s {
-			if a == e {
-					return true
-			}
+		if a == e {
+			return true
+		}
 	}
 	return false
 }

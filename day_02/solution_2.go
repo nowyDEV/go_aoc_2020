@@ -1,15 +1,15 @@
 package main
 
 import (
+	"aoc-2020/utils"
 	"fmt"
 	"log"
 	"strconv"
 	"strings"
-	"aoc-2020/utils"
 )
 
 func main() {
-	text := utils.ReadTextFile("../day_02/data.txt")
+	text := utils.ReadTextFile("./data.txt")
 
 	type PasswordConfig struct {
 		positions    []int
