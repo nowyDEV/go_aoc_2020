@@ -9,7 +9,7 @@ import (
 )
 
 type bag struct {
-	name string
+	name     string
 	children []string
 }
 
@@ -17,10 +17,11 @@ type bagTree struct {
 	root *bag
 }
 
+const emptyBag string = "no other bag"
+
 func main() {
 	formData := utils.ReadTextFile("./data.txt")
 	tree := createTree(formData)
-
 
 	count := 0
 	for _, bagData := range tree {
@@ -32,32 +33,18 @@ func main() {
 	fmt.Println(count)
 }
 
-func createTree(formData []string) []*bag {
-	result := make([]*bag, 0)
-
-	for _, bagData := range formData {
-		name := strings.Split(bagData, "s contain ")[0]
-		
-		children := getBags(strings.Split(bagData, "s contain ")[1])
-		fmt.Println("getBags", children)
-
-		result = append(result, &bag{ name, children })
-	}
-
-	return result
-}
-
-const emptyBag string = "no other bag"
-
-func isOutermostBag(childName string, bagToCheck *bag, bags []*bag) bool {
-  for _, child := range bagToCheck.children {
-		if (child == emptyBag) {
+func isOutermostBag(searchBag string, bagToCheck *bag, bags []*bag) bool {
+	for _, child := range bagToCheck.children {
+		if child == emptyBag {
 			continue
 		}
-		if (child == childName) {
-      return true
+		if child == searchBag {
+			return true
 		}
-		return isOutermostBag(childName, getBag(child, bags), bags)
+		if isOutermostBag(searchBag, getBag(child, bags), bags) {
+			return true
+		}
+		continue
 	}
 	return false
 }
@@ -65,7 +52,7 @@ func isOutermostBag(childName string, bagToCheck *bag, bags []*bag) bool {
 func getBag(name string, bags []*bag) *bag {
 	for _, bag := range bags {
 		if bag.name == name {
-      return bag
+			return bag
 		}
 	}
 
@@ -82,14 +69,34 @@ func getBags(input string) []string {
 
 	arr := strings.Split(formatted, " bag")
 	var newArr []string
-	
+
 	for _, item := range arr {
 		trimmed := strings.Trim(item, "\t \n")
-		
-		if (trimmed != "") {
-			newArr = append(newArr, trimmed + " bag")
+
+		if trimmed != "" {
+			newArr = append(newArr, trimmed+" bag")
 		}
 	}
 
 	return newArr
+}
+
+func initTree() *bagTree {
+	result := &bagTree{root: &bag{}}
+	return result
+}
+
+func createTree(formData []string) []*bag {
+	result := make([]*bag, 0)
+
+	for _, bagData := range formData {
+		name := strings.Split(bagData, "s contain ")[0]
+
+		children := getBags(strings.Split(bagData, "s contain ")[1])
+		fmt.Println("getBags", children)
+
+		result = append(result, &bag{name, children})
+	}
+
+	return result
 }
