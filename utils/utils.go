@@ -68,7 +68,7 @@ func ContainsString(s []string, e string) bool {
 	return false
 }
 
-// ContainsString checks whether provided array contains provided string
+// ContainsInt checks whether provided array contains provided number
 func ContainsInt(s []int, e int) bool {
 	for _, a := range s {
 		if a == e {
@@ -78,3 +78,11 @@ func ContainsInt(s []int, e int) bool {
 	return false
 }
 
+// Sum return the sum of array/slice numbers
+func Sum(array []int) int {  
+	result := 0  
+	for _, v := range array {  
+	 result += v  
+	}  
+	return result  
+ }  
