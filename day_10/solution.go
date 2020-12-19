@@ -26,6 +26,7 @@ func main() {
 }
 
 func getArrangements(voltageArr []int) int {
+	var danks []int
 	numOfIntermediates := 0
 	
 	for i := 0; i < len(voltageArr)-2; i++ {
@@ -33,10 +34,11 @@ func getArrangements(voltageArr []int) int {
 
 		if (diff <= 3) {
 			numOfIntermediates++
+			danks = append(danks, voltageArr[i + 1])
 		}
 	}
 
-	fmt.Println(numOfIntermediates)
+	fmt.Println(numOfIntermediates, danks)
 
 
 	return int(math.Pow(2, float64(numOfIntermediates)))
