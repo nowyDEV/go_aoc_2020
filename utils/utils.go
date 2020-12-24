@@ -85,4 +85,14 @@ func Sum(array []int) int {
 	 result += v  
 	}  
 	return result  
- }  
+ }
+
+ // FindIndex returns index of an string item inside slice/array
+ func FindIndex(list []string, item string) (int) {
+	for index, word := range list {
+			if word == item {
+					return index
+			}
+	}
+	return -1
+}
