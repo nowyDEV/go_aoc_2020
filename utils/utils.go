@@ -79,20 +79,32 @@ func ContainsInt(s []int, e int) bool {
 }
 
 // Sum return the sum of array/slice numbers
-func Sum(array []int) int {  
-	result := 0  
-	for _, v := range array {  
-	 result += v  
-	}  
-	return result  
- }
+func Sum(array []int) int {
+	result := 0
+	for _, v := range array {
+		result += v
+	}
+	return result
+}
 
- // FindIndex returns index of an string item inside slice/array
- func FindIndex(list []string, item string) (int) {
+// FindIndex returns index of an string item inside slice/array
+func FindIndex(list []string, item string) int {
 	for index, word := range list {
-			if word == item {
-					return index
-			}
+		if word == item {
+			return index
+		}
 	}
 	return -1
+}
+
+// FilterOut filters out provided string value from the list of strings
+func FilterOut(list []string, item string) []string {
+	var result []string
+	for _, listItem := range list {
+		if listItem != item {
+			result = append(result, listItem)
+		}
+	}
+
+	return result
 }
