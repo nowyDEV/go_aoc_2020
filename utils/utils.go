@@ -3,7 +3,6 @@ package utils
 import (
 	"bufio"
 	"encoding/hex"
-	"fmt"
 	"log"
 	"os"
 	"regexp"
@@ -35,7 +34,6 @@ func ReadTextFile(filePath string) []string {
 
 // IsInRange checks whether input number is between start and end (including them)
 func IsInRange(input int, start int, end int) bool {
-	fmt.Println("validate", input, start, end)
 	return input >= start && input <= end
 }
 
