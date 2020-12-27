@@ -13,6 +13,28 @@ func main() {
 	data := utils.ReadTextFile("./data.txt")
 
 	fmt.Println(solveWithSimpleMath(data))
+	fmt.Println(solveWithAdvancedMath(data))
+}
+
+func solveWithAdvancedMath(input []string) int {
+	result := 0
+
+	for _, row := range input {
+		result += solveAdvancedExpression(row)
+	}
+
+	return result
+}
+
+func solveAdvancedExpression(input string) int {
+	if hasParentheses(input) {
+		subs := getParenthesesSubstr(input)
+
+		result := strconv.FormatInt(int64(executeAdvancedOperation(splitBySpace(subs[1]))), 10)
+
+		return solveAdvancedExpression(strings.Replace(input, subs[0], result, 1))
+	}
+	return executeAdvancedOperation(splitBySpace(input))
 }
 
 func solveWithSimpleMath(input []string) int {
@@ -34,6 +56,26 @@ func solveExpression(input string) int {
 		return solveExpression(strings.Replace(input, subs[0], result, 1))
 	}
 	return executeOperation(splitBySpace(input))
+}
+
+func executeAdvancedOperation(input []string) int {
+	if len(input) == 3 {
+		return calculate(input)
+	}
+
+	plusIndex := utils.FindIndex(input, "+")
+	if plusIndex > 0 {
+		partialResult := calculate(input[plusIndex-1 : plusIndex+2])
+
+		newInput := append(input[:plusIndex-1], intToStr(partialResult))
+		newInput = append(newInput, input[plusIndex+2:]...)
+		return executeAdvancedOperation(newInput)
+	}
+
+	partialResult := calculate(input[0:3])
+	newInput := append([]string{intToStr(partialResult)}, input[3:]...)
+
+	return executeOperation(newInput)
 }
 
 func executeOperation(input []string) int {
@@ -70,6 +112,16 @@ func calculate(input []string) int {
 	}
 
 	return 0
+}
+
+var additionRegexp = regexp.MustCompile(`\d([^(*)][+]).\d+`)
+
+func getAdditionSubstr(input string) []string {
+	return additionRegexp.FindStringSubmatch(input)
+}
+
+func hasAddition(input string) bool {
+	return additionRegexp.MatchString(input)
 }
 
 var parenthesesRgx = regexp.MustCompile(`\(([^()]+)\)`)
