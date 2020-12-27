@@ -10,27 +10,26 @@ import (
 )
 
 func main() {
-	data := utils.ReadTextFile("./data_test.txt")
+	data := utils.ReadTextFile("./data.txt")
 
+	fmt.Println(solveWithSimpleMath(data))
+}
+
+func solveWithSimpleMath(input []string) int {
 	result := 0
-	for _, row := range data {
+
+	for _, row := range input {
 		result += solveExpression(row)
 	}
 
-	fmt.Println("final result", result)
+	return result
 }
 
 func solveExpression(input string) int {
-	fmt.Println("solveExpression", input)
-
 	if hasParentheses(input) {
 		subs := getParenthesesSubstr(input)
 
-		fmt.Println("substrings", subs)
-
 		result := strconv.FormatInt(int64(executeOperation(splitBySpace(subs[1]))), 10)
-
-		fmt.Println("result", result)
 
 		return solveExpression(strings.Replace(input, subs[0], result, 1))
 	}
@@ -38,8 +37,6 @@ func solveExpression(input string) int {
 }
 
 func executeOperation(input []string) int {
-	fmt.Println("executeOperation", input)
-
 	if len(input) == 3 {
 		return calculate(input)
 	}
@@ -72,15 +69,13 @@ func calculate(input []string) int {
 		return utils.GetIntFromString(input[0]) * utils.GetIntFromString(input[2])
 	}
 
-	fmt.Println("returning 0", input)
 	return 0
 }
 
-var singleOperationParentheses = regexp.MustCompile(`\(([0-9].[^\(]*)\)`)
-var parenthesesRgx = regexp.MustCompile(`\((.*?)\)`)
+var parenthesesRgx = regexp.MustCompile(`\(([^()][^\()]+)\)`)
 
 func getParenthesesSubstr(input string) []string {
-	return singleOperationParentheses.FindStringSubmatch(input)
+	return parenthesesRgx.FindStringSubmatch(input)
 }
 
 func hasParentheses(input string) bool {
