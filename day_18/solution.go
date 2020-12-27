@@ -72,7 +72,7 @@ func calculate(input []string) int {
 	return 0
 }
 
-var parenthesesRgx = regexp.MustCompile(`\(([^()][^\()]+)\)`)
+var parenthesesRgx = regexp.MustCompile(`\(([^()]+)\)`)
 
 func getParenthesesSubstr(input string) []string {
 	return parenthesesRgx.FindStringSubmatch(input)
