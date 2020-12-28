@@ -11,7 +11,6 @@ import (
 type rule struct {
 	index      int
 	conditions [][]string
-	base       string
 }
 
 func main() {
@@ -28,83 +27,83 @@ func main() {
 		}
 	}
 
-	result := 0
+	fmt.Println("rules: ", rules)
+	fmt.Println("--------------------------------------------")
 
-	for _, answer := range answers {
-		if validateAnswer(answer, rules) {
-			result++
-		}
-	}
-
-	fmt.Println(result)
+	fmt.Println(getPossibleAnswers(getRule(1, rules), rules))
 }
 
-func validateAnswer(answer string, rules []rule) bool {
-	isValid, _ := validateRule(answer, getRule(0, rules), rules)
-	return isValid
+func getPossibleAnswers(rule rule, rules []rule) []string {
+	fmt.Println("getPossibleAnswers: ", rule)
+
+	var result []string
+
+	for _, condition := range rule.conditions {
+		var part []string
+
+		for _, check := range condition {
+			if check == "a" || check == "b" {
+				part = updateAnswers(part, check)
+			} else {
+				newAnswers := getPossibleAnswers(getRule(utils.GetIntFromString(check), rules), rules)
+
+				fmt.Println("newAnswers", newAnswers)
+
+				if (len(newAnswers) >=  2 && len(part) >= 2) {
+					for i, item := range newAnswers {
+						part[i] = part[i] + item
+					}
+				} else {
+					part = append(part, newAnswers...)
+				}
+		
+				fmt.Println("newPart", part)
+
+			}
+		}
+
+		fmt.Println("currResult", result)
+		fmt.Println("partToJoin", part)
+
+		result = append(result, strings.Join(part[:], ""))
+
+		fmt.Println("result after check: ", result)
+	}
+
+	fmt.Println("return: ", result, rule)
+
+	return result
 }
 
-func validateRule(answer string, rule rule, rules []rule) (bool, string) {
-	fmt.Println("validateRule", answer, rule)
-	if len(answer) <= 0 {
-		return false, ""
+func updateAnswers(answers []string, newPart string) []string {
+	fmt.Println("updateAnswers: ", answers, newPart)
+
+	answrs := answers[:]
+
+	if len(answrs) == 0 {
+		return append(answrs, newPart)
 	}
 
-	if len(rule.base) > 0 {
-		index := utils.FindIndex(strings.Split(answer, ""), rule.base)
-		if index < 0 {
-			return false, ""
-		}
-		return true, answer[index+1:]
+	for i := range answrs {
+		answrs[i] = answrs[i] + newPart
 	}
 
-	if len(rule.conditions) == 2 {
-		isValid, restAnswer := validateCondition(answer, rule.conditions[0], rules)
-
-		if isValid {
-			return true, restAnswer
-		}
-		return validateCondition(answer, rule.conditions[1], rules)
-	}
-
-	return validateCondition(answer, rule.conditions[0], rules)
-}
-
-func validateCondition(answer string, condition []string, rules []rule) (bool, string) {
-	fmt.Println("validateCondition", answer, condition)
-	answr := answer[0:]
-
-	for i := 0; i < len(condition); i++ {
-		rule := getRule(utils.GetIntFromString(condition[i]), rules)
-		isValid, restAnswer := validateRule(answr, rule, rules)
-
-		if isValid {
-			answr = restAnswer
-		} else {
-			return false, ""
-		}
-	}
-
-	fmt.Println("isValid", true, answr)
-
-	return true, answr
+	return answrs
 }
 
 func createRule(input string) rule {
 	r := regexp.MustCompile((`\d:.`))
-	rb := regexp.MustCompile(`[a-b]`)
 
 	index := utils.GetIntFromString(strings.Replace(r.FindString(input), ":", "", 1))
 
 	return rule{
 		index,
 		parseConditions(r.ReplaceAllString(input, "")),
-		rb.FindString(input),
 	}
 }
 
 func parseConditions(input string) [][]string {
-	r := regexp.MustCompile(`\d[^(|)]+\d`)
+	r := regexp.MustCompile(`[abc]|(\d)[^(|)]+\d`)
 
 	conditions := r.FindAllStringSubmatch(input, 2)
 
