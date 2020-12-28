@@ -49,16 +49,9 @@ func getPossibleAnswers(rule rule, rules []rule) []string {
 
 				fmt.Println("newAnswers", newAnswers)
 
-				if (len(newAnswers) >=  2 && len(part) >= 2) {
-					for i, item := range newAnswers {
-						part[i] = part[i] + item
-					}
-				} else {
-					part = append(part, newAnswers...)
-				}
+				part = append(part, newAnswers...)
 		
 				fmt.Println("newPart", part)
-
 			}
 		}
 
