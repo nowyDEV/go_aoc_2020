@@ -33,25 +33,40 @@ func main() {
 	fmt.Println(getPossibleAnswers(getRule(1, rules), rules))
 }
 
-func getPossibleAnswers(rule rule, rules []rule) []string {
+func getPossibleAnswers(rule rule, rules []rule) [][]string {
 	fmt.Println("getPossibleAnswers: ", rule)
 
-	var result []string
+	var result [][]string
 
 	if len(rule.conditions) == 2 {
-		var resultOR []string
+		var resultOR [][]string
 
 		left := getAnswers(rule.conditions[0], rules)
-		right :=  getAnswers(rule.conditions[1], rules)
+		right := getAnswers(rule.conditions[1], rules)
 
-		resultOR = append(resultOR, left, right)
+		fmt.Println("left: ", left)
+		fmt.Println("right: ", right)
+
+		var mergeLeft []string
+		var mergeRight []string
+
+		for _, itemLeft := range left {
+			mergeLeft = append(mergeLeft, itemLeft...)
+		}
+
+		for _, itemRight := range right {
+			mergeRight = append(mergeRight, itemRight...)
+		}
+
+		fmt.Println("mergeLeft: ", mergeLeft)
+		fmt.Println("mergeRight: ", mergeRight)
 
 		fmt.Println("resultOR: ", resultOR)
 
-		result = append(result, resultOR...)
+		result = append(result, mergeLeft, mergeRight)
 
 	} else {
-		result = append(result, getAnswers(rule.conditions[0], rules))
+		result = append(result, getAnswers(rule.conditions[0], rules)...)
 	}
 
 	fmt.Println("getPossibleAnswers return: ", result)
@@ -59,22 +74,22 @@ func getPossibleAnswers(rule rule, rules []rule) []string {
 	return result
 }
 
-func getAnswers(conditions []string, rules []rule) string {
+func getAnswers(conditions []string, rules []rule) [][]string {
 	fmt.Println("getAnswers: ", conditions)
 
 	if conditions[0] == "a" || conditions[0] == "b" {
-		return conditions[0]
+		return [][]string{conditions}
 	}
 
-	var result []string
+	var result [][]string
 
 	for _, item := range conditions {
 		result = append(result, getPossibleAnswers(getRule(utils.GetIntFromString(item), rules), rules)...)
 	}
 
-	fmt.Println("getAnswers return: ", strings.Join(result[:], ""))
+	fmt.Println("getAnswers return: ", result)
 
-	return strings.Join(result[:], "")
+	return result
 }
 
 func updateAnswers(answers []string, newPart string) []string {
