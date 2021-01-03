@@ -6,3 +6,12 @@
 5: "b"
 
 ababbb
+
+aaab
+aaba
+bbab
+bbba
+baaa
+babb
+abbb
+abaa

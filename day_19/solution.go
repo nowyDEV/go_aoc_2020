@@ -83,6 +83,16 @@ func getAnswers(conditions []string, rules []rule) [][]string {
 
 	var result [][]string
 
+	if (len(conditions) >= 4) {
+		for i := 0; i + 2 <= len(conditions);i++ {
+			answersLeft := getPossibleAnswers(getRule(utils.GetIntFromString(conditions[i]), rules), rules)
+			answersRight := getPossibleAnswers(getRule(utils.GetIntFromString(conditions[i + 2]), rules), rules)
+	
+			result = append(result, )
+		}
+	}
+
+
 	for _, item := range conditions {
 		result = append(result, getPossibleAnswers(getRule(utils.GetIntFromString(item), rules), rules)...)
 	}
