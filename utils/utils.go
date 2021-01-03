@@ -108,3 +108,14 @@ func FilterOut(list []string, item string) []string {
 
 	return result
 }
+
+// ReverseString returns a new reversed string
+func ReverseString(input string) string {
+	var result []string
+
+	for i := len(input) - 1; i >= 0; i-- {
+		result = append(result, input[i:i + 1])
+	}
+
+	return strings.Join(result, "")
+}
