@@ -38,34 +38,43 @@ func getPossibleAnswers(rule rule, rules []rule) []string {
 
 	var result []string
 
-	for _, condition := range rule.conditions {
-		var part []string
+	if len(rule.conditions) == 2 {
+		var resultOR []string
 
-		for _, check := range condition {
-			if check == "a" || check == "b" {
-				part = updateAnswers(part, check)
-			} else {
-				newAnswers := getPossibleAnswers(getRule(utils.GetIntFromString(check), rules), rules)
+		left := getAnswers(rule.conditions[0], rules)
+		right :=  getAnswers(rule.conditions[1], rules)
 
-				fmt.Println("newAnswers", newAnswers)
+		resultOR = append(resultOR, left, right)
 
-				part = append(part, newAnswers...)
-		
-				fmt.Println("newPart", part)
-			}
-		}
+		fmt.Println("resultOR: ", resultOR)
 
-		fmt.Println("currResult", result)
-		fmt.Println("partToJoin", part)
+		result = append(result, resultOR...)
 
-		result = append(result, strings.Join(part[:], ""))
-
-		fmt.Println("result after check: ", result)
+	} else {
+		result = append(result, getAnswers(rule.conditions[0], rules))
 	}
 
-	fmt.Println("return: ", result, rule)
+	fmt.Println("getPossibleAnswers return: ", result)
 
 	return result
+}
+
+func getAnswers(conditions []string, rules []rule) string {
+	fmt.Println("getAnswers: ", conditions)
+
+	if conditions[0] == "a" || conditions[0] == "b" {
+		return conditions[0]
+	}
+
+	var result []string
+
+	for _, item := range conditions {
+		result = append(result, getPossibleAnswers(getRule(utils.GetIntFromString(item), rules), rules)...)
+	}
+
+	fmt.Println("getAnswers return: ", strings.Join(result[:], ""))
+
+	return strings.Join(result[:], "")
 }
 
 func updateAnswers(answers []string, newPart string) []string {
