@@ -3,29 +3,11 @@ package main
 import (
 	"aoc-2020/utils"
 	"fmt"
+	"log"
 	"regexp"
+	"sort"
 	"strings"
 )
-
-func main() {
-	data := utils.ReadTextFile("./data_test.txt")
-
-	foods := parseData(data)
-	ingredients := getIngredients(foods, []ingredient{})
-	fmt.Println("final ingredients", ingredients)
-
-	count := 0
-
-	for _, food := range foods {
-		for _, ingredient := range food.ingredients {
-			if isAllergicIngredient(ingredients, ingredient) == false {
-				count++
-			}
-		}
-	}
-
-	fmt.Println(count)
-}
 
 type food struct {
 	id          int
@@ -38,81 +20,138 @@ type ingredient struct {
 	allergen string
 }
 
-func isAllergicIngredient(ingredients []ingredient, name string) bool {
-	for _, ingredient := range ingredients {
-		if ingredient.name == name {
-			return true
+func main() {
+	data := utils.ReadTextFile("./data.txt")
+
+	foods := parseData(data)
+
+	allergens := getListOfAllergens(foods)
+	allergicIngredients := getAllergicIngredients(foods, allergens, []ingredient{})
+
+	fmt.Println("allergens", allergens)
+	fmt.Println("allergicIngredients", allergicIngredients)
+
+	count := 0
+	for _, food := range foods {
+		for _, ingredient := range food.ingredients {
+			if isAllergicIngredient(allergicIngredients, ingredient) == false {
+				count++
+			}
 		}
 	}
 
-	return false
+	sort.Sort(alphabetic(allergens))
+
+	fmt.Println("part 1 result", count)
+	fmt.Println("part 2 result", generateCanonicalDangerousList(allergens, allergicIngredients))
 }
 
-func getIngredients(input []food, ingredients []ingredient) []ingredient {
-	var result = append(ingredients)
-	hasChanged := false
+type alphabetic []string
 
-	for _, food := range input {
-		for _, secFood := range input {
-			if food.id == secFood.id {
-				continue
-			}
+func (list alphabetic) Len() int { return len(list) }
 
-			foundIngredientsWithAllergens := findIngredientsWithAllergens(secFood, result)
-			if len(foundIngredientsWithAllergens) > 0 {
-				result = append(result, foundIngredientsWithAllergens...)
-				fmt.Println("foundIngredientsWithAllergens updatedResult", result)
-				fmt.Println("----------------------------------------------------")
-				hasChanged = true
-			}
+func (list alphabetic) Swap(i, j int) { list[i], list[j] = list[j], list[i] }
 
-			fmt.Println("compare", food, secFood)
+func (list alphabetic) Less(i, j int) bool {
+	var si string = list[i]
+	var sj string = list[j]
+	var siLower = strings.ToLower(si)
+	var sjLower = strings.ToLower(sj)
+	if siLower == sjLower {
+		return si < sj
+	}
+	return siLower < sjLower
+}
 
-			commonIngredients := getCommonItems(food.ingredients, secFood.ingredients)
-			fmt.Println("commonIngredients", commonIngredients)
-			if len(commonIngredients) == 0 {
-				continue
-			}
+func generateCanonicalDangerousList(allergens []string, ingredients []ingredient) string {
+	result := ""
 
-			commonAllergens := getCommonItems(food.allergens, secFood.allergens)
-			fmt.Println("commonAllergens", commonAllergens)
+	for _, allergen := range allergens {
+		result = result + getIngredientByAllergen(ingredients, allergen).name + ","
+	}
 
-			clearIngredients := getClearIngredients(commonIngredients, result)
-			fmt.Println("clearIngredients", clearIngredients)
-			if len(clearIngredients) == 1 && len(commonAllergens) == 1 {
-				result = append(result, ingredient{clearIngredients[0], commonAllergens[0]})
-				fmt.Println("updatedResult", result)
-				fmt.Println("----------------------------------------------------")
-				hasChanged = true
-			}
+	return result[:len(result) - 1]
+}
+
+func getIngredientByAllergen(ingredients []ingredient, allergen string) ingredient {
+	for _, ingredient := range ingredients {
+		if ingredient.allergen == allergen {
+			return ingredient
 		}
 	}
 
-	if (hasChanged) {
-		return getIngredients(input, result)
+	log.Fatalf("ingredient not found")
+	return ingredient{}
+}
+
+func getListOfAllergens(foods []food) []string {
+	var result []string
+
+	for _, food := range foods {
+		for _, allergen := range food.allergens {
+			if utils.ContainsString(result, allergen) == false {
+				result = append(result, allergen)
+			}
+		}
+	}
+	return result
+}
+
+func getAllergicIngredients(input []food, allergens []string, ingredients []ingredient) []ingredient {
+	var allergicIngredients = append(ingredients)
+	hasChanged := false
+
+	for _, allergen := range allergens {
+		foodsWithAllergen := getFoodsWithAllergen(input, allergen)
+		commonIngredients := getCommonIngredients(foodsWithAllergen)
+		clearIngredients := getClearIngredients(commonIngredients, allergicIngredients)
+
+		if len(clearIngredients) == 1 {
+			allergicIngredients = append(allergicIngredients, ingredient{clearIngredients[0], allergen})
+			hasChanged = true
+		}
+	}
+
+	if hasChanged {
+		return getAllergicIngredients(input, allergens, allergicIngredients)
+	}
+
+	return allergicIngredients
+}
+
+func getFoodsWithAllergen(foods []food, allergen string) []food {
+	var result []food
+
+	for _, food := range foods {
+		if utils.ContainsString(food.allergens, allergen) {
+			result = append(result, food)
+		}
 	}
 
 	return result
 }
 
-func findIngredientsWithAllergens(food food, ingredients []ingredient) []ingredient {
-	remainingAllergens := append(food.allergens)
-	remainingIngredients := append(food.ingredients)
+func getCommonIngredients(foods []food) []string {
+	if len(foods) == 0 {
+		return []string{}
+	}
 
-	for _, foodIngredient := range food.ingredients {
-		for _, ingredient := range ingredients {
-			if foodIngredient == ingredient.name {
-				remainingIngredients = append(utils.FilterOut(remainingIngredients, ingredient.name))
-				remainingAllergens = append(utils.FilterOut(remainingAllergens, ingredient.allergen))
+	var result []string
+
+	for index, food := range foods {
+		if index == 0 {
+			result = append(result, food.ingredients...)
+			continue
+		}
+
+		for _, ingredient := range result {
+			if utils.ContainsString(food.ingredients, ingredient) == false {
+				result = append(utils.FilterOut(result, ingredient))
 			}
 		}
 	}
 
-	if len(remainingAllergens) == 1 && len(remainingIngredients) == 1 {
-		return []ingredient{{remainingIngredients[0], remainingAllergens[0]}}
-	}
-
-	return []ingredient{}
+	return result
 }
 
 func getClearIngredients(names []string, ingredients []ingredient) []string {
@@ -139,16 +178,14 @@ func getClearIngredients(names []string, ingredients []ingredient) []string {
 	return result
 }
 
-func getCommonItems(listOne []string, listTwo []string) []string {
-	var result []string
-
-	for _, item := range listOne {
-		if utils.ContainsString(listTwo, item) {
-			result = append(result, item)
+func isAllergicIngredient(ingredients []ingredient, name string) bool {
+	for _, ingredient := range ingredients {
+		if ingredient.name == name {
+			return true
 		}
 	}
 
-	return result
+	return false
 }
 
 func parseData(input []string) []food {
