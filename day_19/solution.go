@@ -10,7 +10,7 @@ import (
 
 type rule struct {
 	index      int
-	conditions [][]string
+	conditions string
 }
 
 func main() {
@@ -29,75 +29,33 @@ func main() {
 
 	fmt.Println("rules: ", rules)
 	fmt.Println("--------------------------------------------")
-
-	fmt.Println(getPossibleAnswers(getRule(1, rules), rules))
+	fmt.Println(getFilledRules(rules))
 }
 
-func getPossibleAnswers(rule rule, rules []rule) [][]string {
-	fmt.Println("getPossibleAnswers: ", rule)
+func fillRules(rules []rule, possibleFills []int) []rule {
+	for _, item := range rules {
+		r := regexp.MustCompile("[0-9]")
+		conds := strings.Split(item.conditions, "")
 
-	var result [][]string
-
-	if len(rule.conditions) == 2 {
-		var resultOR [][]string
-
-		left := getAnswers(rule.conditions[0], rules)
-		right := getAnswers(rule.conditions[1], rules)
-
-		fmt.Println("left: ", left)
-		fmt.Println("right: ", right)
-
-		var mergeLeft []string
-		var mergeRight []string
-
-		for _, itemLeft := range left {
-			mergeLeft = append(mergeLeft, itemLeft...)
+		for i := 0; i < len(conds);i++ {
+			if (r.MatchString(conds[i]) && utils.ContainsInt(possibleFills, utils.GetIntFromString(conds[i]))) {
+				conds[i] = getRule(utils.GetIntFromString(conds[i]), rules).conditions
+			}
 		}
-
-		for _, itemRight := range right {
-			mergeRight = append(mergeRight, itemRight...)
-		}
-
-		fmt.Println("mergeLeft: ", mergeLeft)
-		fmt.Println("mergeRight: ", mergeRight)
-
-		fmt.Println("resultOR: ", resultOR)
-
-		result = append(result, mergeLeft, mergeRight)
-
-	} else {
-		result = append(result, getAnswers(rule.conditions[0], rules)...)
 	}
 
-	fmt.Println("getPossibleAnswers return: ", result)
-
-	return result
+	return rules
 }
 
-func getAnswers(conditions []string, rules []rule) [][]string {
-	fmt.Println("getAnswers: ", conditions)
+func getFilledRules(rules []rule) []int {
+	r := regexp.MustCompile("[0-9]")
+	var result []int
 
-	if conditions[0] == "a" || conditions[0] == "b" {
-		return [][]string{conditions}
-	}
-
-	var result [][]string
-
-	if (len(conditions) >= 4) {
-		for i := 0; i + 2 <= len(conditions);i++ {
-			answersLeft := getPossibleAnswers(getRule(utils.GetIntFromString(conditions[i]), rules), rules)
-			answersRight := getPossibleAnswers(getRule(utils.GetIntFromString(conditions[i + 2]), rules), rules)
-	
-			result = append(result, )
+	for _, item := range rules {
+		if (r.MatchString(item.conditions) == false) {
+			result = append(result, item.index)
 		}
 	}
-
-
-	for _, item := range conditions {
-		result = append(result, getPossibleAnswers(getRule(utils.GetIntFromString(item), rules), rules)...)
-	}
-
-	fmt.Println("getAnswers return: ", result)
 
 	return result
 }
@@ -119,13 +77,13 @@ func updateAnswers(answers []string, newPart string) []string {
 }
 
 func createRule(input string) rule {
-	r := regexp.MustCompile((`\d:.`))
+	r := regexp.MustCompile((`\d:.|\"`))
 
 	index := utils.GetIntFromString(strings.Replace(r.FindString(input), ":", "", 1))
 
 	return rule{
 		index,
-		parseConditions(r.ReplaceAllString(input, "")),
+		r.ReplaceAllString(input, ""),
 	}
 }
 
