@@ -129,3 +129,16 @@ func ReverseNumbers(numbers []int) []int {
 	
 	return numbers
 }
+
+// GetHighestNumber returns highest int from the slice
+func GetHighestNumber(numbers []int) int {
+	result := numbers[0]
+
+	for i := 1; i < len(numbers); i++ {
+		if (numbers[i] > result) {
+			result = numbers[i]
+		}
+	}
+
+	return result
+}
