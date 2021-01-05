@@ -9,11 +9,11 @@ import (
 )
 
 func main() {
-	data := utils.ReadTextFile("./data.txt")
+	data := utils.ReadTextFile("./data_test.txt")
 
 	players := parseData(data)
 	winningCards := playRegularCombat(players[0], players[1])
-	_, winningCardsRecursive := playRecursiveCombat(players[0], players[1], []string{})
+	_, winningCardsRecursive := playRecursiveCombat(players[0], players[1])
 	fmt.Println(getScore(winningCards))
 	fmt.Println(getScore(winningCardsRecursive))
 }
@@ -28,56 +28,76 @@ func getScore(cards []int) (score int) {
 	return score
 }
 
-func playRecursiveCombat(playerOne []int, playerTwo []int, deckHistory []string) (winner string, cards []int) {
-	if isInfiniteGame(playerOne, playerTwo, deckHistory) {
-		fmt.Println("INFINITE GAME")
-		fmt.Println("------------------------------------------------")
+var gameLoop []string
 
-		return "playerOne", playerOne
-	}
+func playRecursiveCombat(playerOne []int, playerTwo []int) (winner string, cards []int) {
+	playerOneCards := playerOne[:]
+	playerTwoCards := playerTwo[:]
+	var deckHistory []string
 
-	if len(playerOne) == 0 {
-		return "playerTwo", playerTwo
-	}
+	for true {
+		fmt.Println("PLAY ROUND")
+		fmt.Println(playerOneCards, playerTwoCards)
 
-	if len(playerTwo) == 0 {
-		return "playerOne", playerOne
-	}
-
-	playerOnePick := playerOne[0]
-	playerTwoPick := playerTwo[0]
-
-	deckHistory = append(deckHistory, convertCardsToString(playerOne) + "x" + convertCardsToString(playerTwo))
-
-	if playerOnePick <= len(playerOne)-1 && playerTwoPick <= len(playerTwo)-1 {
-		// winner = "playerOne"
-
-		subGameWinner, _ := playRecursiveCombat(playerOne[1:], playerTwo[1:], []string{})
-		winner = subGameWinner
-		// playerOne does not have highest card
-		// if utils.ContainsInt(playerOne[1:], utils.GetHighestNumber(append(playerOne[1:], playerTwo[1:]...))) == false {
-		// 	subGameWinner, _ := playRecursiveCombat(playerOne[1:], playerTwo[1:], deckHistory{[]string{}, []string{}})
-		// 	winner = subGameWinner
-		// } 
-	} else {
-		if playerOne[0] > playerTwo[0] {
-			winner = "playerOne"
+		if isInfiniteGame(playerOneCards, playerTwoCards, deckHistory) {
+			fmt.Println("INFINITE GAME")
+			fmt.Println("------------------------------------------------")
+	
+			return "playerOne", playerOneCards
+		}
+	
+		if len(playerOneCards) == 0 {
+			return "playerTwo", playerTwoCards
+		}
+	
+		if len(playerTwoCards) == 0 {
+			return "playerOne", playerOneCards
 		}
 
-		if playerOne[0] < playerTwo[0] {
-			winner = "playerTwo"
-		}
-	}
+		playerOnePick := playerOneCards[0]
+		playerTwoPick := playerTwoCards[0]
 
-	if winner == "playerOne" {
-		newPlayerOne := append(playerOne[1:], playerOne[0], playerTwo[0])
-		newPlayerTwo := playerTwo[1:]
-		return playRecursiveCombat(newPlayerOne, newPlayerTwo, deckHistory)
-	}
-	if winner == "playerTwo" {
-		newPlayerOne := playerOne[1:]
-		newPlayerTwo := append(playerTwo[1:], playerTwo[0], playerOne[0])
-		return playRecursiveCombat(newPlayerOne, newPlayerTwo, deckHistory)
+		deckHistory = append(deckHistory, convertCardsToString(playerOneCards) + "x" + convertCardsToString(playerTwoCards))
+
+		if len(playerOneCards) > playerOnePick  && len(playerTwoCards) > playerTwoPick {
+			newCardsPlayerOne := playerOneCards[1:playerOnePick + 1]
+			newCardsPlayerTwo := playerTwoCards[1:playerTwoPick + 1]
+
+			fmt.Println("PLAY SUBGAME")
+			fmt.Println(newCardsPlayerOne, newCardsPlayerTwo)
+
+			subGameWinner, _ := playRecursiveCombat(newCardsPlayerOne, newCardsPlayerTwo)
+			winner = subGameWinner
+
+			fmt.Println("FINISH SUBGAME", winner)
+			fmt.Println("playerTwo", playerTwoCards)
+			fmt.Println("playerOne", playerOneCards)
+
+			// playerOne does not have highest card
+			// if utils.ContainsInt(newCardsPlayerOne, utils.GetHighestNumber(append(newCardsPlayerOne, newCardsPlayerTwo...))) {
+			// 	winner = "playerOne"
+			// } else {
+			// 	subGameWinner, _ := playRecursiveCombat(newCardsPlayerOne, newCardsPlayerTwo)
+			// 	winner = subGameWinner
+			// }
+		} else {
+			if playerOnePick > playerTwoPick {
+				winner = "playerOne"
+			}
+	
+			if playerOnePick < playerTwoPick {
+				winner = "playerTwo"
+			}
+		}
+
+		if winner == "playerOne" {
+			playerOneCards = append(playerOneCards[1:], playerOnePick, playerTwoPick)
+			playerTwoCards = playerTwoCards[1:]
+		}
+		if winner == "playerTwo" {
+			playerOneCards = playerOneCards[1:]
+			playerTwoCards = append(playerTwoCards[1:], playerTwoPick, playerOnePick)
+		}
 	}
 
 	fmt.Println("EMPTY RETURN")
@@ -87,8 +107,16 @@ func playRecursiveCombat(playerOne []int, playerTwo []int, deckHistory []string)
 
 func isInfiniteGame(playerOneDeck []int, playerTwoDeck []int, deckHistory []string) bool {
 	cardStr := convertCardsToString(playerOneDeck) + "x" + convertCardsToString(playerTwoDeck)
+	isInfinite := utils.ContainsString(deckHistory, cardStr)
 
-	return utils.ContainsString(deckHistory, cardStr)
+	if (isInfinite) {
+		if (utils.ContainsString(gameLoop, cardStr)) {
+			fmt.Println("ALREADY LOOPED", cardStr)
+		}
+		gameLoop = append(gameLoop, cardStr)
+	}
+
+	return isInfinite
 }
 
 func convertCardsToString(cards []int) string {
