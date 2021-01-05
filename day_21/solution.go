@@ -70,7 +70,7 @@ func generateCanonicalDangerousList(allergens []string, ingredients []ingredient
 		result = result + getIngredientByAllergen(ingredients, allergen).name + ","
 	}
 
-	return result[:len(result) - 1]
+	return result[:len(result)-1]
 }
 
 func getIngredientByAllergen(ingredients []ingredient, allergen string) ingredient {

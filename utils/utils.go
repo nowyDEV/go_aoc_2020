@@ -119,3 +119,26 @@ func ReverseString(input string) string {
 
 	return strings.Join(result, "")
 }
+
+// ReverseNumbers reverses a slice of integers
+func ReverseNumbers(numbers []int) []int {
+	for i := 0; i < len(numbers)/2; i++ {
+		j := len(numbers) - i - 1
+		numbers[i], numbers[j] = numbers[j], numbers[i]
+	}
+	
+	return numbers
+}
+
+// GetHighestNumber returns highest int from the slice
+func GetHighestNumber(numbers []int) int {
+	result := numbers[0]
+
+	for i := 1; i < len(numbers); i++ {
+		if (numbers[i] > result) {
+			result = numbers[i]
+		}
+	}
+
+	return result
+}
