@@ -28,8 +28,6 @@ func getScore(cards []int) (score int) {
 	return score
 }
 
-var gameLoop []string
-
 func playRecursiveCombat(playerOneCards []int, playerTwoCards []int) (winner string, cards []int) {
 	var deckHistory []string
 
