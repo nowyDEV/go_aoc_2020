@@ -87,10 +87,20 @@ func Sum(array []int) int {
 	return result
 }
 
-// FindIndex returns index of an string item inside slice/array
+// FindIndex returns index of a string item inside slice
 func FindIndex(list []string, item string) int {
 	for index, word := range list {
 		if word == item {
+			return index
+		}
+	}
+	return -1
+}
+
+// FindIndexNums returns index of a number item inside slice
+func FindIndexNums(list []int, item int) int {
+	for index, num := range list {
+		if num == item {
 			return index
 		}
 	}
@@ -114,7 +124,7 @@ func ReverseString(input string) string {
 	var result []string
 
 	for i := len(input) - 1; i >= 0; i-- {
-		result = append(result, input[i:i + 1])
+		result = append(result, input[i:i+1])
 	}
 
 	return strings.Join(result, "")
@@ -126,7 +136,7 @@ func ReverseNumbers(numbers []int) []int {
 		j := len(numbers) - i - 1
 		numbers[i], numbers[j] = numbers[j], numbers[i]
 	}
-	
+
 	return numbers
 }
 
@@ -135,8 +145,32 @@ func GetHighestNumber(numbers []int) int {
 	result := numbers[0]
 
 	for i := 1; i < len(numbers); i++ {
-		if (numbers[i] > result) {
+		if numbers[i] > result {
 			result = numbers[i]
+		}
+	}
+
+	return result
+}
+
+// GetHighestNumber returns lowest int from the slice
+func GetLowestNumber(numbers []int) int {
+	result := numbers[0]
+
+	for i := 1; i < len(numbers); i++ {
+		if numbers[i] < result {
+			result = numbers[i]
+		}
+	}
+
+	return result
+}
+
+// SubtractSlice removes elements provided in the second argument list from the slice
+func SubtractSlice(target []int, values []int) (result []int) {
+	for _, item := range target {
+		if !ContainsInt(values, item) {
+			result = append(result, item)
 		}
 	}
 
