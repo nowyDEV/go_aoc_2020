@@ -7,13 +7,12 @@ import (
 )
 
 func main() {
-	data := utils.ReadTextFile("./data_test.txt")
+	data := utils.ReadTextFile("./data.txt")
 
 	cups := parseData(data[0])
 
-	fmt.Println("startCups: ", cups)
-
-	fmt.Println(playGame(cups, 9))
+	cupsAfterGame := playGame(cups, 100)
+	fmt.Println(joinCups(cupsAfterGame, 1))
 }
 
 func parseData(input string) (result []int) {
@@ -29,47 +28,48 @@ func parseData(input string) (result []int) {
 func playGame(cups []int, maxTurns int) []int {
 	max := len(cups) - 1
 	turns := 0
-	currIndex := 0
+	currentCup := cups[0]
 
 	for turns < maxTurns {
-		currentCup := cups[currIndex]
-		fmt.Println("currentCup", currentCup)
+		currentCupIndex := utils.FindIndexNums(cups, currentCup)
 
 		picked := make([]int, 3)
-		copy(picked, getNextItems(cups, currIndex, 3))
-
-		fmt.Println("picked", picked)
+		copy(picked, getNextItems(cups, currentCupIndex, 3))
 
 		restCups := utils.SubtractSlice(cups, picked)
 
-		fmt.Println("restCups", restCups)
-
-		destinationCup := pickDestinationCup(cups[currIndex]-1, picked, utils.SubtractSlice(restCups, []int{currentCup}))
-
-		fmt.Println("destinationCup", destinationCup)
+		destinationCup := pickDestinationCup(cups[currentCupIndex]-1, picked, utils.SubtractSlice(restCups, []int{currentCup}))
 
 		destinationIndex := utils.FindIndexNums(restCups, destinationCup)
-		currentCupIndex := utils.FindIndexNums(restCups, currentCup)
 
 		cups = concatSlices(restCups[:destinationIndex+1], picked, restCups[destinationIndex+1:])
 
-		if destinationIndex < currentCupIndex {
-			cups = moveSlice(cups, 3)
-		}
+		newCurrentCupIndex := utils.FindIndexNums(cups, currentCup)
 
-		fmt.Println("newCups", cups)
-		fmt.Println("--------------------------------------------")
+		cups = moveSlice(cups, newCurrentCupIndex-currentCupIndex)
 
-		if currIndex < max {
-			currIndex++
+		currentCupIndex = utils.FindIndexNums(cups, currentCup)
+
+		if currentCupIndex < max {
+			currentCup = cups[currentCupIndex+1]
 		} else {
-			currIndex = 0
+			currentCup = cups[0]
 		}
 
 		turns++
 	}
 
 	return cups
+}
+
+func joinCups(list []int, startValue int) (result string) {
+	startIndex := utils.FindIndexNums(list, startValue)
+
+	for i := startIndex + 1; i < len(list)+startIndex; i++ {
+		result = fmt.Sprintf("%s%d", result, list[i%9])
+	}
+
+	return result
 }
 
 func getNextItems(list []int, index int, numOfItems int) (result []int) {
