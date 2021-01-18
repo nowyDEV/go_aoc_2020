@@ -46,9 +46,21 @@ func IsHexValue(input string) bool {
 	return len(input) == 7
 }
 
-// GetIntFromString extracts numbers from string and converts them to integer
+// GetIntFromString extracts positive numbers from string and converts them to integer
 func GetIntFromString(input string) int {
 	r, _ := regexp.Compile("([0-9]+)")
+	value, err := strconv.Atoi(r.FindString(input))
+
+	if err != nil {
+		log.Fatalf("failed to convert")
+	}
+
+	return value
+}
+
+// GetIntFromString extracts positive and negative numbers from string and converts them to integer
+func GetFullIntFromString(input string) int {
+	r, _ := regexp.Compile("(-?[0-9]+)")
 	value, err := strconv.Atoi(r.FindString(input))
 
 	if err != nil {
