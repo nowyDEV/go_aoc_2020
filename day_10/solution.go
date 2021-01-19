@@ -20,7 +20,6 @@ func main() {
 
 	fmt.Println(voltageArr)
 
-
 	fmt.Println(multiplyJoltDiffs(voltageArr))
 	fmt.Println(getArrangements(voltageArr))
 }
@@ -28,18 +27,17 @@ func main() {
 func getArrangements(voltageArr []int) int {
 	var danks []int
 	numOfIntermediates := 0
-	
+
 	for i := 0; i < len(voltageArr)-2; i++ {
 		diff := int(math.Abs(float64(voltageArr[i] - voltageArr[i+2])))
 
-		if (diff <= 3) {
+		if diff <= 3 {
 			numOfIntermediates++
-			danks = append(danks, voltageArr[i + 1])
+			danks = append(danks, voltageArr[i+1])
 		}
 	}
 
 	fmt.Println(numOfIntermediates, danks)
-
 
 	return int(math.Pow(2, float64(numOfIntermediates)))
 }

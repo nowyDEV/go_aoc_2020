@@ -20,7 +20,7 @@ func main() {
 	sortCoords(coordinates)
 	dataList := buildFlipDataList(coordinates)
 
-	fmt.Println("part 1: ", len(dataList) - utils.Sum(dataList))
+	fmt.Println("part 1: ", len(dataList)-utils.Sum(dataList))
 }
 
 type coords [][]int

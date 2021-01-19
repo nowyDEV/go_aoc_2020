@@ -15,6 +15,6 @@ func BenchmarkBigLen(b *testing.B) {
 	for _, numStr := range strings.Split(data[0], ",") {
 		numbers = append(numbers, utils.GetIntFromString(numStr))
 	}
-	
+
 	getNthNumber(numbers, 30000-len(numbers))
 }

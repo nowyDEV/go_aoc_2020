@@ -3,109 +3,73 @@ package main
 import (
 	"aoc-2020/utils"
 	"fmt"
-	"log"
 	"regexp"
 	"strings"
 )
 
-type rule struct {
-	index      int
-	conditions string
-}
-
 func main() {
-	data := utils.ReadTextFile("./data_test.txt")
+	data := utils.ReadTextFile("./data.txt")
 
-	var rules []rule
+	rules := make(map[int]string)
 	var answers []string
 
 	for _, line := range data {
 		if utils.ContainsString(strings.Split(line, ""), ":") {
-			rules = append(rules, createRule(line))
+			key, value := parseRule(line)
+			rules[key] = value
 		} else if len(line) > 0 {
 			answers = append(answers, line)
 		}
 	}
 
-	fmt.Println("rules: ", rules)
-	fmt.Println("--------------------------------------------")
-	fmt.Println(getFilledRules(rules))
-}
+	computedRule := computeRules(rules[0], rules)
+	r := regexp.MustCompile("^" + computedRule + "$")
 
-func fillRules(rules []rule, possibleFills []int) []rule {
-	for _, item := range rules {
-		r := regexp.MustCompile("[0-9]")
-		conds := strings.Split(item.conditions, "")
-
-		for i := 0; i < len(conds);i++ {
-			if (r.MatchString(conds[i]) && utils.ContainsInt(possibleFills, utils.GetIntFromString(conds[i]))) {
-				conds[i] = getRule(utils.GetIntFromString(conds[i]), rules).conditions
-			}
+	result := 0
+	for _, answer := range answers {
+		if r.MatchString(answer) {
+			result++
 		}
 	}
-
-	return rules
+	fmt.Println("part 1 result: ", result)
 }
 
-func getFilledRules(rules []rule) []int {
-	r := regexp.MustCompile("[0-9]")
-	var result []int
+func parseRule(input string) (key int, value string) {
+	items := strings.Split(input, ": ")
 
-	for _, item := range rules {
-		if (r.MatchString(item.conditions) == false) {
-			result = append(result, item.index)
-		}
+	return utils.GetIntFromString(items[0]), items[1]
+}
+
+var rPipe = regexp.MustCompile(`\|`)
+var ruleToRegexp = make(map[string]string)
+
+func computeRules(value string, rules map[int]string) (result string) {
+	mapItemValue, ok := ruleToRegexp[value]
+	if ok {
+		return mapItemValue
 	}
 
+	match, _ := regexp.MatchString("^\".*\"$", value)
+	if match {
+		result = strings.Replace(value, "\"", "", 2)
+	} else if rPipe.MatchString(value) {
+		options := strings.Split(value, " | ")
+		result = fmt.Sprintf("(%s|%s)", computeRules(options[0], rules), computeRules(options[1], rules))
+	} else {
+		result = computeKeys(value, rules)
+	}
+
+	ruleToRegexp[value] = result
 	return result
 }
 
-func updateAnswers(answers []string, newPart string) []string {
-	fmt.Println("updateAnswers: ", answers, newPart)
+func computeKeys(input string, rules map[int]string) string {
+	keys := strings.Split(input, " ")
+	var res []string
 
-	answrs := answers[:]
-
-	if len(answrs) == 0 {
-		return append(answrs, newPart)
+	for _, key := range keys {
+		res = append(res, computeRules(rules[utils.GetIntFromString(key)], rules))
 	}
 
-	for i := range answrs {
-		answrs[i] = answrs[i] + newPart
-	}
-
-	return answrs
-}
-
-func createRule(input string) rule {
-	r := regexp.MustCompile((`\d:.|\"`))
-
-	index := utils.GetIntFromString(strings.Replace(r.FindString(input), ":", "", 1))
-
-	return rule{
-		index,
-		r.ReplaceAllString(input, ""),
-	}
-}
-
-func parseConditions(input string) [][]string {
-	r := regexp.MustCompile(`[abc]|(\d)[^(|)]+\d`)
-
-	conditions := r.FindAllStringSubmatch(input, 2)
-
-	for i := range conditions {
-		conditions[i] = strings.Split(conditions[i][0], " ")
-	}
-
-	return conditions
-}
-
-func getRule(index int, rules []rule) rule {
-	for _, rule := range rules {
-		if rule.index == index {
-			return rule
-		}
-	}
-
-	log.Fatalf("found no rules, returning default")
-	return rules[0]
+	return strings.Join(res, "")
 }
