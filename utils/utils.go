@@ -3,6 +3,7 @@ package utils
 import (
 	"bufio"
 	"encoding/hex"
+	"errors"
 	"log"
 	"os"
 	"regexp"
@@ -187,4 +188,31 @@ func SubtractSlice(target []int, values []int) (result []int) {
 	}
 
 	return result
+}
+
+// Flatten flattens dank memes
+func Flatten(arr interface{}) ([]string, error) {
+	return doFlatten([]string{}, arr)
+}
+
+func doFlatten(acc []string, arr interface{}) ([]string, error) {
+	var err error
+
+	switch v := arr.(type) {
+	case []string:
+		acc = append(acc, v...)
+	case string:
+		acc = append(acc, v)
+	case []interface{}:
+		for i := range v {
+			acc, err = doFlatten(acc, v[i])
+			if err != nil {
+				return nil, errors.New("not int or []int given")
+			}
+		}
+	default:
+		return nil, errors.New("not int given")
+	}
+
+	return acc, nil
 }
